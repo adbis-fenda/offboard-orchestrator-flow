@@ -57,7 +57,7 @@ export function AppSidebar() {
               </SidebarMenuItem>
               
               <SidebarMenuItem>
-                <SidebarMenuButton asChild onClick={() => navigate("/spend-management")}>
+                <SidebarMenuButton asChild onClick={() => navigate("/SpendManagement")}>
                   <div className="flex items-center">
                     <CreditCard />
                     <span>Spend Management</span>
