@@ -2,6 +2,10 @@
 import { User, UserDetail } from "@/types";
 import { mockApps } from "./applications";
 
+export function simulateApiCall<T>(data: T, delay = 300): Promise<T> {
+  return new Promise(resolve => setTimeout(() => resolve(data), delay));
+}
+
 export const mockUsers: User[] = [
   {
     id: "1",
