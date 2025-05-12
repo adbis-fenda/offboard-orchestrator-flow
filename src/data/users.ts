@@ -1,11 +1,19 @@
 
+// src/data/users.ts
+
 import { User, UserDetail } from "@/types";
 import { mockApps } from "./applications";
 
+/**
+ * Simulates an API call by resolving the given data after an optional delay.
+ */
 export function simulateApiCall<T>(data: T, delay = 300): Promise<T> {
   return new Promise(resolve => setTimeout(() => resolve(data), delay));
 }
 
+/**
+ * Sample user data
+ */
 export const mockUsers: User[] = [
   {
     id: "1",
@@ -69,29 +77,38 @@ export const mockUsers: User[] = [
   },
 ];
 
-export const getUserDetail = (id: string): UserDetail | undefined => {
+/**
+ * Filter users based on a search query (case-insensitive).
+ * Returns a promise to simulate async behavior.
+ */
+export async function filterUsers(query: string): Promise<User[]> {
+  const lowerQuery = query.trim().toLowerCase();
+  const results = !lowerQuery
+    ? mockUsers
+    : mockUsers.filter(
+        (user) =>
+          user.name.toLowerCase().includes(lowerQuery) ||
+          user.email.toLowerCase().includes(lowerQuery) ||
+          user.department.toLowerCase().includes(lowerQuery) ||
+          user.title.toLowerCase().includes(lowerQuery)
+      );
+  return simulateApiCall(results);
+}
+
+/**
+ * Fetch detailed info for a single user by ID, including applications.
+ * Returns a promise to simulate async behavior.
+ */
+export async function getUserDetail(id: string): Promise<UserDetail | undefined> {
   const user = mockUsers.find((u) => u.id === id);
-  if (!user) return undefined;
-  
-  return {
+  if (!user) return simulateApiCall(undefined);
+
+  const detail: UserDetail = {
     ...user,
     applications: mockApps[id] || [],
     joinDate: "March 15, 2022",
     manager: "Robert Johnson",
     phoneNumber: "+1 (555) 123-4567",
   };
-};
-
-// Filter users based on search query
-export const filterUsers = (query: string): User[] => {
-  if (!query) return mockUsers;
-  
-  const lowerQuery = query.toLowerCase();
-  return mockUsers.filter(
-    (user) =>
-      user.name.toLowerCase().includes(lowerQuery) ||
-      user.email.toLowerCase().includes(lowerQuery) ||
-      user.department.toLowerCase().includes(lowerQuery) ||
-      user.title.toLowerCase().includes(lowerQuery)
-  );
-};
+  return simulateApiCall(detail);
+}

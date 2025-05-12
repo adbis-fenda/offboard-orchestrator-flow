@@ -4,43 +4,42 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/Sidebar";
 import Header from "@/components/Header";
 import { UserCard } from "@/components/UserCard";
-import { UserDetail } from "@/components/UserDetail";
+import { UserDetail as UserDetailComponent } from "@/components/UserDetail";
 import { StatCard } from "@/components/StatCard";
-import { filterUsers, getUserDetail, simulateApiCall } from "@/data/users";
+import { filterUsers, getUserDetail } from "@/data/users";
 import { mockDashboardStats } from "@/data/dashboardStats";
-import { UserDetail as UserDetailType } from "@/types";
+import type { User, UserDetail } from "@/types";
 
-const Index = () => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filteredUsers, setFilteredUsers] = useState(filterUsers(""));
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const [selectedUserDetail, setSelectedUserDetail] = useState<UserDetailType | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+const Index: React.FC = () => {
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+  const [selectedUserDetail, setSelectedUserDetail] = useState<UserDetail | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // Filter users when search query changes
+  // Fetch and filter users whenever the search query changes
   useEffect(() => {
-    setFilteredUsers(filterUsers(searchQuery));
+    let cancelled = false;
+    setIsLoading(true);
+    filterUsers(searchQuery).then((users) => {
+      if (!cancelled) setFilteredUsers(users);
+    }).finally(() => {
+      if (!cancelled) setIsLoading(false);
+    });
+    return () => { cancelled = true; };
   }, [searchQuery]);
 
   // Handle reviewing user access
-  const handleReviewAccess = (userId: string) => {
+  const handleReviewAccess = async (userId: string) => {
     setIsLoading(true);
-    setSelectedUserId(userId);
-    
-    // Simulate API call to fetch user details
-    simulateApiCall(`/api/users/${userId}/details`)
-      .then(() => {
-        const userDetail = getUserDetail(userId);
-        if (userDetail) {
-          setSelectedUserDetail(userDetail);
-        }
-        setIsLoading(false);
-      });
+    const detail = await getUserDetail(userId);
+    if (detail) {
+      setSelectedUserDetail(detail);
+    }
+    setIsLoading(false);
   };
 
   // Go back to user list
   const handleBackToUsers = () => {
-    setSelectedUserId(null);
     setSelectedUserDetail(null);
   };
 
@@ -51,19 +50,21 @@ const Index = () => {
         <div className="flex-1 flex flex-col">
           <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
           <div className="flex-1 p-6 bg-background overflow-auto">
-            {selectedUserId && selectedUserDetail ? (
-              <UserDetail user={selectedUserDetail} onBack={handleBackToUsers} />
+            {selectedUserDetail ? (
+              <UserDetailComponent user={selectedUserDetail} onBack={handleBackToUsers} />
             ) : (
               <>
+                {/* Dashboard Overview Stats */}
                 <div className="mb-8">
                   <h2 className="text-2xl font-bold mb-6">Dashboard Overview</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {mockDashboardStats.map((stat, index) => (
-                      <StatCard key={index} stat={stat} />
+                    {mockDashboardStats.map((stat, idx) => (
+                      <StatCard key={idx} stat={stat} />
                     ))}
                   </div>
                 </div>
 
+                {/* User Directory */}
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-2xl font-bold">User Directory</h2>
                   <div className="text-sm text-muted-foreground">
@@ -77,12 +78,8 @@ const Index = () => {
                       Loading...
                     </div>
                   ) : filteredUsers.length > 0 ? (
-                    filteredUsers.map((user) => (
-                      <UserCard
-                        key={user.id}
-                        user={user}
-                        onReviewAccess={handleReviewAccess}
-                      />
+                    filteredUsers.map(user => (
+                      <UserCard key={user.id} user={user} onReviewAccess={handleReviewAccess} />
                     ))
                   ) : (
                     <div className="col-span-3 py-12 text-center text-muted-foreground">
