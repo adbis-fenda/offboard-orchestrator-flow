@@ -6,7 +6,8 @@ import Header from "@/components/Header";
 import { UserCard } from "@/components/UserCard";
 import { UserDetail } from "@/components/UserDetail";
 import { StatCard } from "@/components/StatCard";
-import { filterUsers, getUserDetail, mockDashboardStats, simulateApiCall } from "@/data/mockData";
+import { filterUsers, getUserDetail, simulateApiCall } from "@/data/users";
+import { mockDashboardStats } from "@/data/dashboardStats";
 import { UserDetail as UserDetailType } from "@/types";
 
 const Index = () => {

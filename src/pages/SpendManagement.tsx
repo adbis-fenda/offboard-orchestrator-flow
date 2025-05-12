@@ -5,7 +5,7 @@ import { AppSidebar } from "@/components/Sidebar";
 import Header from "@/components/Header";
 import { StatCard } from "@/components/StatCard";
 import { SubscriptionCard } from "@/components/SubscriptionCard";
-import { mockSubscriptionCosts, getSpendStats } from "@/data/mockData";
+import { mockSubscriptionCosts, getSpendStats } from "@/data/subscriptions";
 import {
   Table,
   TableBody,
