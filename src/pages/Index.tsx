@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/Sidebar";
 import Header from "@/components/Header";
@@ -9,6 +8,15 @@ import { StatCard } from "@/components/StatCard";
 import { filterUsers, getUserDetail } from "@/data/users";
 import { mockDashboardStats } from "@/data/dashboardStats";
 import type { User, UserDetail } from "@/types";
+import { Card } from "@/components/ui/card";
+
+// Sample spend management data
+const applications = [
+  { name: 'ServiceNow', seats: 50, cost: '9.355,40€', icon: '/icons/servicenow.png' },
+  { name: 'HubSpot', seats: 50, cost: '4.115,40€', icon: '/icons/hubspot.png' },
+  { name: 'Slack', seats: 50, cost: '2.100,40€', icon: '/icons/slack.png' },
+  { name: 'MongoDB', seats: 50, cost: '355,40€', icon: '/icons/mongodb.png' },
+];
 
 const Index: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -49,14 +57,14 @@ const Index: React.FC = () => {
         <AppSidebar />
         <div className="flex-1 flex flex-col">
           <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-          <div className="flex-1 p-6 bg-background overflow-auto">
+          <div className="flex-1 p-6 bg-background overflow-auto space-y-8">
             {selectedUserDetail ? (
               <UserDetailComponent user={selectedUserDetail} onBack={handleBackToUsers} />
             ) : (
               <>
                 {/* Dashboard Overview Stats */}
-                <div className="mb-8">
-                  <h2 className="text-2xl font-bold mb-6">Dashboard Overview</h2>
+                <div>
+                  <h2 className="text-2xl font-bold mb-4">Dashboard Overview</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {mockDashboardStats.map((stat, idx) => (
                       <StatCard key={idx} stat={stat} />
@@ -64,28 +72,50 @@ const Index: React.FC = () => {
                   </div>
                 </div>
 
-                {/* User Directory */}
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold">User Directory</h2>
-                  <div className="text-sm text-muted-foreground">
-                    {filteredUsers.length} users found
+                {/* Spend Management */}
+                <Card className="p-4">
+                  <h2 className="text-xl font-semibold mb-4">Spend Management</h2>
+                  <h3 className="text-lg font-medium mb-2">Applications</h3>
+                  <div className="space-y-4">
+                    {applications.map((app) => (
+                      <div key={app.name} className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <img src={app.icon} alt={`${app.name} icon`} className="w-8 h-8 rounded-full" />
+                          <div>
+                            <p className="font-medium">{app.name}</p>
+                            <p className="text-sm text-muted-foreground">{app.seats} Seats</p>
+                          </div>
+                        </div>
+                        <p className="font-semibold">{app.cost} / Month</p>
+                      </div>
+                    ))}
                   </div>
-                </div>
+                </Card>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {isLoading ? (
-                    <div className="col-span-3 py-12 text-center text-muted-foreground">
-                      Loading...
+                {/* User Directory */}
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-2xl font-bold">User Directory</h2>
+                    <div className="text-sm text-muted-foreground">
+                      {filteredUsers.length} users found
                     </div>
-                  ) : filteredUsers.length > 0 ? (
-                    filteredUsers.map(user => (
-                      <UserCard key={user.id} user={user} onReviewAccess={handleReviewAccess} />
-                    ))
-                  ) : (
-                    <div className="col-span-3 py-12 text-center text-muted-foreground">
-                      No users found matching "{searchQuery}"
-                    </div>
-                  )}
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {isLoading ? (
+                      <div className="col-span-3 py-12 text-center text-muted-foreground">
+                        Loading...
+                      </div>
+                    ) : filteredUsers.length > 0 ? (
+                      filteredUsers.map((user) => (
+                        <UserCard key={user.id} user={user} onReviewAccess={handleReviewAccess} />
+                      ))
+                    ) : (
+                      <div className="col-span-3 py-12 text-center text-muted-foreground">
+                        No users found matching "{searchQuery}"
+                      </div>
+                    )}
+                  </div>
                 </div>
               </>
             )}
