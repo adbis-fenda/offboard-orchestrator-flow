@@ -12,10 +12,10 @@ import { Card } from "@/components/ui/card";
 
 // Sample spend management data
 const applications = [
-  { name: 'ServiceNow', seats: 50, cost: '9.355,40€', icon: '/icons/servicenow.png' },
-  { name: 'HubSpot', seats: 50, cost: '4.115,40€', icon: '/icons/hubspot.png' },
-  { name: 'Slack', seats: 50, cost: '2.100,40€', icon: '/icons/slack.png' },
-  { name: 'MongoDB', seats: 50, cost: '355,40€', icon: '/icons/mongodb.png' },
+  { name: 'ServiceNow', seats: 50, cost: '9.355,40€', icon: '/public/servicenow.png' },
+  { name: 'HubSpot', seats: 50, cost: '4.115,40€', icon: '/public/hubspot.png' },
+  { name: 'Slack', seats: 50, cost: '2.100,40€', icon: '/public/slack.png' },
+  { name: 'MongoDB', seats: 50, cost: '355,40€', icon: '/public/mongodb.png' },
 ];
 
 const Index: React.FC = () => {
