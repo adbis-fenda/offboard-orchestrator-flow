@@ -1,11 +1,11 @@
-
 import { useNavigate } from "react-router-dom";
 import { 
   Users, 
   LayoutDashboard, 
   Shield, 
   Settings, 
-  LogOut 
+  LogOut,
+  CreditCard
 } from "lucide-react";
 import { 
   Sidebar,
@@ -52,6 +52,15 @@ export function AppSidebar() {
                   <div className="flex items-center">
                     <Shield />
                     <span>Security</span>
+                  </div>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild onClick={() => navigate("/spend-management")}>
+                  <div className="flex items-center">
+                    <CreditCard />
+                    <span>Spend Management</span>
                   </div>
                 </SidebarMenuButton>
               </SidebarMenuItem>
