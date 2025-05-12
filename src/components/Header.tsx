@@ -16,8 +16,8 @@ const Header = ({ searchQuery = "", setSearchQuery = (_: string) => {} }) => {
             onClick={() => navigate("/")} 
             className="text-2xl font-bold text-brand-purple cursor-pointer flex items-center"
           >
-            <span className="text-brand-light-purple">Access</span>
-            <span>Hub</span>
+            <span className="text-brand-light-purple">Fender</span>
+            <span>.io</span>
           </h1>
           
           <div className="hidden md:flex relative">
