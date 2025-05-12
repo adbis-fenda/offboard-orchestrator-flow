@@ -25,7 +25,7 @@ import {
   ChartTooltip, 
   ChartTooltipContent 
 } from "@/components/ui/chart";
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid, Legend, LabelList } from "recharts";
 import { SubscriptionCost } from "@/types";
 
 const SpendManagement = () => {
@@ -101,25 +101,34 @@ const SpendManagement = () => {
                       waste: { label: "Wasted Spend", color: "#ea384c" }
                     }}
                   >
-                    <BarChart
-                      data={chartData}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
-                    >
-                      <XAxis
-                        dataKey="name"
-                        angle={-45}
-                        textAnchor="end"
-                        height={70}
-                      />
-                      <YAxis />
-                      <Bar dataKey="active" stackId="a" fill="var(--color-active, #6E59A5)" />
-                      <Bar dataKey="waste" stackId="a" fill="var(--color-waste, #ea384c)" />
-                      <ChartTooltip
-                        content={
-                          <ChartTooltipContent />
-                        }
-                      />
-                    </BarChart>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={chartData}
+                        margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+                      >
+                        <defs>
+                          <linearGradient id="colorActiveGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#6E59A5" stopOpacity={0.8} />
+                            <stop offset="95%" stopColor="#6E59A5" stopOpacity={0} />
+                          </linearGradient>
+                          <linearGradient id="colorWasteGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#ea384c" stopOpacity={0.8} />
+                            <stop offset="95%" stopColor="#ea384c" stopOpacity={0} />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" angle={-45} textAnchor="end" height={70} />
+                        <YAxis />
+                        <ChartTooltip content={<ChartTooltipContent />} />
+                        <Legend verticalAlign="top" height={36} />
+                        <Bar dataKey="active" stackId="a" fill="url(#colorActiveGradient)" radius={[8, 8, 0, 0]}>
+                          <LabelList dataKey="active" position="top" formatter={(value) => `$${value.toLocaleString()}`} />
+                        </Bar>
+                        <Bar dataKey="waste" stackId="a" fill="url(#colorWasteGradient)" radius={[8, 8, 0, 0]}>
+                          <LabelList dataKey="waste" position="top" formatter={(value) => `$${value.toLocaleString()}`} />
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
                   </ChartContainer>
                 </div>
               </CardContent>
