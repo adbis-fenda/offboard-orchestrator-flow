@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/Sidebar";
@@ -37,6 +36,14 @@ const SpendManagement = () => {
   const filteredSubscriptions = mockSubscriptionCosts.filter((sub) => 
     sub.appName.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Include any subscriptions not matching the search alongside filtered results
+  const allSubscriptions = [
+    ...filteredSubscriptions,
+    ...mockSubscriptionCosts.filter(sub =>
+      !filteredSubscriptions.some(f => f.id === sub.id)
+    )
+  ];
   
   // Prepare data for the chart
   const chartData = mockSubscriptionCosts.map((sub) => {
@@ -87,7 +94,7 @@ const SpendManagement = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="h-80">
+                <div className="h-100">
                   <ChartContainer
                     config={{
                       active: { label: "Active Spend", color: "#6E59A5" },
@@ -151,12 +158,12 @@ const SpendManagement = () => {
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold">Application Subscriptions</h3>
               <div className="text-sm text-muted-foreground">
-                {filteredSubscriptions.length} subscriptions found
+                {allSubscriptions.length} subscriptions found
               </div>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredSubscriptions.map((subscription: SubscriptionCost) => (
+              {allSubscriptions.map((subscription: SubscriptionCost) => (
                 <SubscriptionCard key={subscription.id} subscription={subscription} />
               ))}
             </div>
