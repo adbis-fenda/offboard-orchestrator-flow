@@ -32,3 +32,24 @@ export interface DashboardStat {
   change?: string;
   direction?: 'up' | 'down' | 'neutral';
 }
+
+export interface SubscriptionCost {
+  id: string;
+  appId: string;
+  appName: string;
+  costPerSeat: number;
+  currency: string;
+  billingCycle: 'monthly' | 'yearly';
+  totalSeats: number;
+  activeSeats: number;
+  lastUpdated: string;
+  icon: string;
+}
+
+export interface SpendManagementStat {
+  label: string;
+  value: string | number;
+  previousValue?: string | number;
+  change?: string;
+  direction?: 'up' | 'down' | 'neutral';
+}
