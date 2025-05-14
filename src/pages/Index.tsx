@@ -124,7 +124,7 @@ const Index: React.FC = () => {
                 {authUser?.role === "admin" && (
                   <Card className="p-4">
                     <h2 className="text-xl font-semibold mb-4">Spend Management</h2>
-                    <h3 className="text-lg font-medium mb-2">Applications</h3>
+                    <h3 className="text-lg font-medium mb-2">Most Used Applications</h3>
                     <div className="space-y-4">
                       {applications.map((app) => (
                         <div key={app.name} className="flex items-center justify-between">
