@@ -24,8 +24,8 @@ export default function UsersPage() {
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <div className="flex-1 flex flex-col">
+        <Header searchQuery="" setSearchQuery={() => {}} />
           <div className="flex-1 p-6 bg-background overflow-auto">
-            <Header searchQuery="" setSearchQuery={() => {}} />
             <h1 className="text-2xl font-bold mb-6">Users & Access</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {mockUsers.map((user) => (
