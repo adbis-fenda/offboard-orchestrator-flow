@@ -11,21 +11,34 @@ import { mockDashboardStats } from "@/data/dashboardStats";
 import type { User, UserDetail } from "@/types";
 import { Card } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // Sample spend management data
 const applications = [
-  { name: 'ServiceNow', seats: 50, cost: '9.355,40€', icon: '/public/servicenow.png' },
-  { name: 'HubSpot', seats: 50, cost: '4.115,40€', icon: '/public/hubspot.png' },
-  { name: 'Slack', seats: 50, cost: '2.100,40€', icon: '/public/slack.png' },
-  { name: 'MongoDB', seats: 50, cost: '355,40€', icon: '/public/mongodb.png' },
+  { name: 'ServiceNow', seats: 50, cost: '9.355,40€', icon: '/servicenow.png' },
+  { name: 'HubSpot', seats: 50, cost: '4.115,40€', icon: '/hubspot.png' },
+  { name: 'Slack', seats: 50, cost: '2.100,40€', icon: '/slack.png' },
+  { name: 'MongoDB', seats: 50, cost: '355,40€', icon: '/mongodb.png' },
 ];
 
 const Index: React.FC = () => {
   const { user } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [selectedUserDetail, setSelectedUserDetail] = useState<UserDetail | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  // Check for userId in URL params to show user detail
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const userId = params.get('userId');
+    
+    if (userId) {
+      handleReviewAccess(userId);
+    }
+  }, [location.search]);
 
   // Fetch and filter users whenever the search query changes
   useEffect(() => {
@@ -52,6 +65,7 @@ const Index: React.FC = () => {
   // Go back to user list
   const handleBackToUsers = () => {
     setSelectedUserDetail(null);
+    navigate('/');
   };
 
   return (

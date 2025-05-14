@@ -6,7 +6,8 @@ import {
   Shield, 
   Settings, 
   LogOut,
-  CreditCard
+  CreditCard,
+  FileBarChart
 } from "lucide-react";
 import { 
   Sidebar,
@@ -60,6 +61,15 @@ export function AppSidebar() {
                       <div className="flex items-center">
                         <Users />
                         <span>Users</span>
+                      </div>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild onClick={() => navigate("/compliance")}>
+                      <div className="flex items-center">
+                        <FileBarChart />
+                        <span>Compliance</span>
                       </div>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

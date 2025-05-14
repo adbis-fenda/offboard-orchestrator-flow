@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import SpendManagement from "./pages/SpendManagement";
 import UsersPage from "@/pages/Users";
+import CompliancePage from "@/pages/Compliance";
 import Login from "@/pages/Login";
 
 const queryClient = new QueryClient();
@@ -45,6 +46,7 @@ const AppRoutes = () => {
       <Route path="/" element={<ProtectedRoute element={<Index />} />} />
       <Route path="/spend-management" element={<ProtectedRoute element={<SpendManagement />} requiredRole="admin" />} />
       <Route path="/users" element={<ProtectedRoute element={<UsersPage />} requiredRole="admin" />} />
+      <Route path="/compliance" element={<ProtectedRoute element={<CompliancePage />} requiredRole="admin" />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

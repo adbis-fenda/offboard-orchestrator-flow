@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { AppAccessCard } from "./AppAccessCard";
 import { UserDetail as UserDetailType } from "@/types";
-import { ArrowLeft, UserX } from "lucide-react";
+import { ArrowLeft, UserX, UserPlus, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Dialog,
@@ -17,7 +17,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
+import { addAuditLog } from "@/data/auditLogs";
 
 interface UserDetailProps {
   user: UserDetailType;
@@ -29,21 +37,81 @@ export function UserDetail({ user, onBack }: UserDetailProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isOffboarding, setIsOffboarding] = useState(false);
   const [isOffboarded, setIsOffboarded] = useState(false);
+  const [isAssignRoleDialogOpen, setIsAssignRoleDialogOpen] = useState(false);
+  const [selectedRole, setSelectedRole] = useState("");
+  const [isRequestAccessDialogOpen, setIsRequestAccessDialogOpen] = useState(false);
+  const [requestedApp, setRequestedApp] = useState("");
+  const [requestedRole, setRequestedRole] = useState("");
   
-  const handleOffboardUser = () => {
+  const handleOffboardUser = async () => {
     setIsDialogOpen(false);
     setIsOffboarding(true);
     
     // Simulate API call
-    setTimeout(() => {
+    setTimeout(async () => {
       setIsOffboarding(false);
       setIsOffboarded(true);
+      
+      // Log the offboarding action
+      await addAuditLog({
+        action: "User Offboarded",
+        performedBy: "Admin User", // In a real app, this would come from auth context
+        targetUser: user.name,
+        details: "All access has been revoked and accounts disabled."
+      });
       
       toast({
         title: "User offboarded successfully",
         description: "All access has been revoked and accounts disabled.",
       });
     }, 2000);
+  };
+
+  const handleAssignRole = async () => {
+    if (!selectedRole) return;
+    
+    // Simulate API call
+    setTimeout(async () => {
+      // Log the role assignment action
+      await addAuditLog({
+        action: "Role Assigned",
+        performedBy: "Admin User", // In a real app, this would come from auth context
+        targetUser: user.name,
+        details: `Assigned ${selectedRole} role to user.`
+      });
+      
+      setIsAssignRoleDialogOpen(false);
+      
+      toast({
+        title: "Role assigned successfully",
+        description: `The ${selectedRole} role has been assigned to ${user.name}.`,
+      });
+    }, 1000);
+  };
+
+  const handleRequestAccess = async () => {
+    if (!requestedApp || !requestedRole) return;
+    
+    // Simulate API call
+    setTimeout(async () => {
+      // Log the access request
+      await addAuditLog({
+        action: "Access Requested",
+        performedBy: "Admin User", // In a real app, this would come from auth context
+        targetUser: user.name,
+        targetApp: requestedApp,
+        details: `Requested ${requestedRole} access to ${requestedApp}.`
+      });
+      
+      setIsRequestAccessDialogOpen(false);
+      setRequestedApp("");
+      setRequestedRole("");
+      
+      toast({
+        title: "Access request submitted",
+        description: `The request for ${requestedApp} access has been submitted for approval.`,
+      });
+    }, 1000);
   };
 
   return (
@@ -123,7 +191,30 @@ export function UserDetail({ user, onBack }: UserDetailProps) {
         </CardContent>
       </Card>
       
-      <h3 className="text-lg font-medium mb-4">Application Access</h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-medium">Application Access</h3>
+        <div className="flex space-x-2">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => setIsRequestAccessDialogOpen(true)}
+            disabled={isOffboarded}
+          >
+            <UserPlus className="h-4 w-4 mr-2" /> 
+            Request Access
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => setIsAssignRoleDialogOpen(true)}
+            disabled={isOffboarded}
+          >
+            <Shield className="h-4 w-4 mr-2" /> 
+            Assign Role
+          </Button>
+        </div>
+      </div>
+      
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         {user.applications.map((app) => (
           <AppAccessCard key={app.id} app={app} />
@@ -156,6 +247,7 @@ export function UserDetail({ user, onBack }: UserDetailProps) {
         </Button>
       </div>
       
+      {/* Offboarding Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -188,6 +280,110 @@ export function UserDetail({ user, onBack }: UserDetailProps) {
               onClick={handleOffboardUser}
             >
               Proceed with Offboarding
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Assign Role Dialog */}
+      <Dialog open={isAssignRoleDialogOpen} onOpenChange={setIsAssignRoleDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Assign Role</DialogTitle>
+            <DialogDescription>
+              Assign system-level roles to {user.name}.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Select Role</label>
+              <Select onValueChange={setSelectedRole}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose a role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="viewer">Viewer</SelectItem>
+                  <SelectItem value="editor">Editor</SelectItem>
+                  <SelectItem value="admin">Administrator</SelectItem>
+                  <SelectItem value="finance">Finance</SelectItem>
+                  <SelectItem value="hr">HR</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsAssignRoleDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleAssignRole}
+              disabled={!selectedRole}
+            >
+              Assign Role
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Request Access Dialog */}
+      <Dialog open={isRequestAccessDialogOpen} onOpenChange={setIsRequestAccessDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Request Additional Access</DialogTitle>
+            <DialogDescription>
+              Request additional application access for {user.name}.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Application</label>
+              <Select onValueChange={setRequestedApp}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose an application" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Salesforce">Salesforce</SelectItem>
+                  <SelectItem value="Google Workspace">Google Workspace</SelectItem>
+                  <SelectItem value="AWS">AWS</SelectItem>
+                  <SelectItem value="Microsoft 365">Microsoft 365</SelectItem>
+                  <SelectItem value="Atlassian">Atlassian</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Access Level</label>
+              <Select onValueChange={setRequestedRole}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose access level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="viewer">Viewer</SelectItem>
+                  <SelectItem value="contributor">Contributor</SelectItem>
+                  <SelectItem value="admin">Admin</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsRequestAccessDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleRequestAccess}
+              disabled={!requestedApp || !requestedRole}
+            >
+              Submit Request
             </Button>
           </DialogFooter>
         </DialogContent>
