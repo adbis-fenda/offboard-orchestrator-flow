@@ -75,7 +75,7 @@ export function AppSidebar() {
                   </SidebarMenuItem>
                   
                   <SidebarMenuItem>
-                    <SidebarMenuButton asChild>
+                    <SidebarMenuButton asChild onClick={() => navigate("/security")}>
                       <div className="flex items-center">
                         <Shield />
                         <span>Security</span>
