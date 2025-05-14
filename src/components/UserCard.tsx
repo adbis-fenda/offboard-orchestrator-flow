@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -17,9 +16,10 @@ import { useToast } from "@/components/ui/use-toast";
 interface UserCardProps {
   user: User;
   onReviewAccess: (userId: string) => void;
+  isAdmin?: boolean;
 }
 
-export function UserCard({ user, onReviewAccess }: UserCardProps) {
+export function UserCard({ user, onReviewAccess, isAdmin }: UserCardProps) {
   const { toast } = useToast();
   const [isHovered, setIsHovered] = useState(false);
   
