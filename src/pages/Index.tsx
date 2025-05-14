@@ -22,7 +22,7 @@ const applications = [
 ];
 
 const Index: React.FC = () => {
-  const { user } = useAuth();
+  const { user: authUser } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -90,7 +90,7 @@ const Index: React.FC = () => {
                 </div>
 
                 {/* Spend Management (only visible for admin) */}
-                {user?.role === "admin" && (
+                {authUser?.role === "admin" && (
                   <Card className="p-4">
                     <h2 className="text-xl font-semibold mb-4">Spend Management</h2>
                     <h3 className="text-lg font-medium mb-2">Applications</h3>
@@ -131,8 +131,8 @@ const Index: React.FC = () => {
                           key={user.id} 
                           user={user} 
                           onReviewAccess={handleReviewAccess} 
-                          // Fix: Pass isAdmin based on the authenticated user's role from AuthContext, not from the user in the list
-                          isAdmin={!!user && user?.role === "admin"}
+                          // Pass isAdmin based on the authenticated user's role from AuthContext
+                          isAdmin={authUser?.role === "admin"}
                         />
                       ))
                     ) : (
