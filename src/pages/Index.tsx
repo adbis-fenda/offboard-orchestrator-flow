@@ -27,7 +27,7 @@ const Index: React.FC = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
-  const [selectedUserDetail, setSelectedUserDetail] = useState<UserDetail | null>(null);
+  const [currentUserData, setCurrentUserData] = useState<UserDetail | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // Check for userId in URL params to show user detail
@@ -37,11 +37,28 @@ const Index: React.FC = () => {
     
     if (userId) {
       handleReviewAccess(userId);
+    } else if (authUser && authUser.role !== "admin") {
+      // For normal users, automatically load their own data
+      fetchCurrentUserData();
     }
-  }, [location.search]);
+  }, [location.search, authUser]);
 
-  // Fetch and filter users whenever the search query changes
+  // Fetch current user data for normal users
+  const fetchCurrentUserData = async () => {
+    if (!authUser) return;
+    
+    setIsLoading(true);
+    // For demo purposes, we'll use the first user in the list as the current user
+    // In a real app, this would fetch the data for the authenticated user from the backend
+    const userDetail = await getUserDetail("1"); // Using ID 1 as a placeholder for normal user
+    setCurrentUserData(userDetail || null);
+    setIsLoading(false);
+  };
+
+  // Fetch and filter users whenever the search query changes (only for admins)
   useEffect(() => {
+    if (authUser?.role !== "admin") return;
+    
     let cancelled = false;
     setIsLoading(true);
     filterUsers(searchQuery).then((users) => {
@@ -50,22 +67,29 @@ const Index: React.FC = () => {
       if (!cancelled) setIsLoading(false);
     });
     return () => { cancelled = true; };
-  }, [searchQuery]);
+  }, [searchQuery, authUser]);
 
   // Handle reviewing user access
   const handleReviewAccess = async (userId: string) => {
     setIsLoading(true);
     const detail = await getUserDetail(userId);
     if (detail) {
-      setSelectedUserDetail(detail);
+      // For admins, this sets selectedUserDetail
+      // For normal users, this sets their own data
+      if (authUser?.role === "admin") {
+        navigate(`/?userId=${userId}`);
+      } else {
+        setCurrentUserData(detail);
+      }
     }
     setIsLoading(false);
   };
 
   // Go back to user list
   const handleBackToUsers = () => {
-    setSelectedUserDetail(null);
-    navigate('/');
+    if (authUser?.role === "admin") {
+      navigate('/');
+    }
   };
 
   return (
@@ -75,11 +99,18 @@ const Index: React.FC = () => {
         <div className="flex-1 flex flex-col">
           <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
           <div className="flex-1 p-6 bg-background overflow-auto space-y-8">
-            {selectedUserDetail ? (
-              <UserDetailComponent user={selectedUserDetail} onBack={handleBackToUsers} />
+            {/* For admin showing another user's details OR normal user showing their own details */}
+            {(location.search.includes('userId') && authUser?.role === "admin") || 
+             (authUser?.role !== "admin" && currentUserData) ? (
+              <UserDetailComponent 
+                user={authUser?.role === "admin" ? 
+                  (filteredUsers.find(u => u.id === new URLSearchParams(location.search).get('userId')) as UserDetail) : 
+                  (currentUserData as UserDetail)} 
+                onBack={handleBackToUsers} 
+              />
             ) : (
               <>
-                {/* Dashboard Overview Stats */}
+                {/* Dashboard Overview Stats - visible to all */}
                 <div>
                   <h2 className="text-2xl font-bold mb-4">Dashboard Overview</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -111,37 +142,54 @@ const Index: React.FC = () => {
                   </Card>
                 )}
 
-                {/* User Directory (visible to all but with limited functionality for non-admins) */}
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-2xl font-bold">User Directory</h2>
-                    <div className="text-sm text-muted-foreground">
-                      {filteredUsers.length} users found
+                {/* User Directory - only visible to admins */}
+                {authUser?.role === "admin" ? (
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-2xl font-bold">User Directory</h2>
+                      <div className="text-sm text-muted-foreground">
+                        {filteredUsers.length} users found
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {isLoading ? (
+                        <div className="col-span-3 py-12 text-center text-muted-foreground">
+                          Loading...
+                        </div>
+                      ) : filteredUsers.length > 0 ? (
+                        filteredUsers.map((user) => (
+                          <UserCard 
+                            key={user.id} 
+                            user={user} 
+                            onReviewAccess={handleReviewAccess} 
+                            isAdmin={authUser?.role === "admin"}
+                          />
+                        ))
+                      ) : (
+                        <div className="col-span-3 py-12 text-center text-muted-foreground">
+                          No users found matching "{searchQuery}"
+                        </div>
+                      )}
                     </div>
                   </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {isLoading ? (
-                      <div className="col-span-3 py-12 text-center text-muted-foreground">
-                        Loading...
-                      </div>
-                    ) : filteredUsers.length > 0 ? (
-                      filteredUsers.map((user) => (
-                        <UserCard 
-                          key={user.id} 
-                          user={user} 
-                          onReviewAccess={handleReviewAccess} 
-                          // Pass isAdmin based on the authenticated user's role from AuthContext
-                          isAdmin={authUser?.role === "admin"}
-                        />
-                      ))
-                    ) : (
-                      <div className="col-span-3 py-12 text-center text-muted-foreground">
-                        No users found matching "{searchQuery}"
-                      </div>
-                    )}
+                ) : (
+                  /* For normal users - show a button to view their access */
+                  <div className="mt-6">
+                    <Card className="p-6">
+                      <h2 className="text-xl font-semibold mb-4">My Access</h2>
+                      <p className="text-muted-foreground mb-4">
+                        View your application access and request additional permissions.
+                      </p>
+                      <button 
+                        className="bg-brand-purple hover:bg-brand-light-purple text-white px-4 py-2 rounded"
+                        onClick={() => fetchCurrentUserData()}
+                      >
+                        View My Access
+                      </button>
+                    </Card>
                   </div>
-                </div>
+                )}
               </>
             )}
           </div>
