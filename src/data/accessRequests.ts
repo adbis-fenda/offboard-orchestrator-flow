@@ -60,7 +60,8 @@ export const mockAccessRequests: AccessRequest[] = [
 ];
 
 export async function getAccessRequests(): Promise<AccessRequest[]> {
-  return simulateApiCall(mockAccessRequests);
+  // Fix: Pass a string endpoint path first, then the data as second parameter
+  return simulateApiCall("access/requests", mockAccessRequests);
 }
 
 export async function updateAccessRequestStatus(
@@ -90,5 +91,6 @@ export async function updateAccessRequestStatus(
     details: `${newStatus === "approved" ? "Approved" : "Denied"} request for ${mockAccessRequests[requestIndex].requestedRole} access to ${mockAccessRequests[requestIndex].applicationName}`
   });
   
-  return simulateApiCall(mockAccessRequests[requestIndex]);
+  // Fix: Pass a string endpoint path first, then the data as second parameter
+  return simulateApiCall("access/requests/update", mockAccessRequests[requestIndex]);
 }
