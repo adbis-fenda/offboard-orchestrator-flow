@@ -11,12 +11,26 @@ import { toast } from "@/components/ui/use-toast";
 import { Shield, Check, X, AlertCircle } from "lucide-react";
 import { getAccessRequests, updateAccessRequestStatus } from "@/data/accessRequests";
 
+interface AccessRequest {
+  id: string;
+  applicationName: string;
+  applicationIcon: string;
+  requestDate: string;
+  userAvatarUrl: string;
+  userName: string;
+  userEmail: string;
+  requestedRole: string;
+  status: 'pending' | 'approved' | 'denied';
+}
+
+type AccessRequestsResponse = AccessRequest[] | { requests: AccessRequest[] };
+
 export default function SecurityPage() {
   const queryClient = useQueryClient();
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
   const [dialogAction, setDialogAction] = useState<"approve" | "deny" | null>(null);
 
-  const { data: accessRequests, isLoading } = useQuery({
+  const { data: accessRequests, isLoading } = useQuery<AccessRequestsResponse>({
     queryKey: ["accessRequests"],
     queryFn: getAccessRequests
   });
@@ -70,7 +84,8 @@ export default function SecurityPage() {
     );
   }
 
-  const pendingRequests = accessRequests?.filter(req => req.status === "pending") || [];
+  const requestsArray = Array.isArray(accessRequests) ? accessRequests : (accessRequests?.requests ?? []);
+  const pendingRequests = requestsArray.filter(req => req.status === "pending");
 
   return (
     <Layout>
