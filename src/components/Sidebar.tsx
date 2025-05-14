@@ -39,7 +39,7 @@ export function AppSidebar() {
               </SidebarMenuItem>
               
               <SidebarMenuItem>
-                <SidebarMenuButton asChild onClick={() => navigate("/")}>
+                <SidebarMenuButton asChild onClick={() => navigate("/users")}>
                   <div className="flex items-center">
                     <Users />
                     <span>Users</span>
