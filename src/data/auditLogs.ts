@@ -58,7 +58,8 @@ export const mockAuditLogs: AuditLog[] = [
 ];
 
 export async function getAuditLogs(): Promise<AuditLog[]> {
-  return simulateApiCall(mockAuditLogs);
+  // Fix: Use the generic version of simulateApiCall to match the expected types
+  return simulateApiCall<AuditLog[]>(mockAuditLogs);
 }
 
 export async function addAuditLog(log: Omit<AuditLog, "id" | "timestamp">): Promise<AuditLog> {
@@ -69,5 +70,6 @@ export async function addAuditLog(log: Omit<AuditLog, "id" | "timestamp">): Prom
   };
   
   mockAuditLogs.unshift(newLog);
-  return simulateApiCall(newLog);
+  // Fix: Use the generic version of simulateApiCall to match the expected types
+  return simulateApiCall<AuditLog>(newLog);
 }
