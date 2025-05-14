@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/Sidebar";
@@ -9,6 +10,7 @@ import { filterUsers, getUserDetail } from "@/data/users";
 import { mockDashboardStats } from "@/data/dashboardStats";
 import type { User, UserDetail } from "@/types";
 import { Card } from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Sample spend management data
 const applications = [
@@ -19,6 +21,7 @@ const applications = [
 ];
 
 const Index: React.FC = () => {
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [selectedUserDetail, setSelectedUserDetail] = useState<UserDetail | null>(null);
@@ -72,27 +75,29 @@ const Index: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Spend Management */}
-                <Card className="p-4">
-                  <h2 className="text-xl font-semibold mb-4">Spend Management</h2>
-                  <h3 className="text-lg font-medium mb-2">Applications</h3>
-                  <div className="space-y-4">
-                    {applications.map((app) => (
-                      <div key={app.name} className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <img src={app.icon} alt={`${app.name} icon`} className="w-8 h-8 rounded-full" />
-                          <div>
-                            <p className="font-medium">{app.name}</p>
-                            <p className="text-sm text-muted-foreground">{app.seats} Seats</p>
+                {/* Spend Management (only visible for admin) */}
+                {user?.role === "admin" && (
+                  <Card className="p-4">
+                    <h2 className="text-xl font-semibold mb-4">Spend Management</h2>
+                    <h3 className="text-lg font-medium mb-2">Applications</h3>
+                    <div className="space-y-4">
+                      {applications.map((app) => (
+                        <div key={app.name} className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <img src={app.icon} alt={`${app.name} icon`} className="w-8 h-8 rounded-full" />
+                            <div>
+                              <p className="font-medium">{app.name}</p>
+                              <p className="text-sm text-muted-foreground">{app.seats} Seats</p>
+                            </div>
                           </div>
+                          <p className="font-semibold">{app.cost} / Month</p>
                         </div>
-                        <p className="font-semibold">{app.cost} / Month</p>
-                      </div>
-                    ))}
-                  </div>
-                </Card>
+                      ))}
+                    </div>
+                  </Card>
+                )}
 
-                {/* User Directory */}
+                {/* User Directory (visible to all but with limited functionality for non-admins) */}
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-2xl font-bold">User Directory</h2>
@@ -108,7 +113,12 @@ const Index: React.FC = () => {
                       </div>
                     ) : filteredUsers.length > 0 ? (
                       filteredUsers.map((user) => (
-                        <UserCard key={user.id} user={user} onReviewAccess={handleReviewAccess} />
+                        <UserCard 
+                          key={user.id} 
+                          user={user} 
+                          onReviewAccess={handleReviewAccess} 
+                          isAdmin={user?.role === "admin"}
+                        />
                       ))
                     ) : (
                       <div className="col-span-3 py-12 text-center text-muted-foreground">
