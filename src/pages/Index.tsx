@@ -131,8 +131,8 @@ const Index: React.FC = () => {
                           key={user.id} 
                           user={user} 
                           onReviewAccess={handleReviewAccess} 
-                          // Fix: Pass 'isAdmin' based on the current user's role rather than checking the role of the user in the list
-                          isAdmin={!!user && user?.role === "admin"}
+                          // Fix: Pass isAdmin based on the authenticated user's role, not the user in the list
+                          isAdmin={user && !!user && user?.role === "admin"}
                         />
                       ))
                     ) : (
