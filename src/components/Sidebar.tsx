@@ -8,7 +8,7 @@ import {
   LogOut,
   CreditCard,
   FileBarChart,
-  Apps
+  LayoutGrid
 } from "lucide-react";
 import { 
   Sidebar,
@@ -58,7 +58,7 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild onClick={() => navigate("/my-applications")}>
                   <div className="flex items-center">
-                    <Apps />
+                    <LayoutGrid />
                     <span>My Applications</span>
                   </div>
                 </SidebarMenuButton>

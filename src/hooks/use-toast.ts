@@ -1,5 +1,5 @@
 import * as React from "react"
-import { sonner } from 'sonner'
+import { toast as sonnerToast } from 'sonner'
 
 const TOAST_LIMIT = 5
 const TOAST_REMOVE_DELAY = 1000000
@@ -163,14 +163,11 @@ const useToast = () => {
 
 // Standalone toast function
 const toast = (props: Omit<ToasterToast, "id">) => {
-  return sonner({
+  return sonnerToast({
     ...props,
     description: props.description,
     title: props.title,
   });
 };
 
-export { useToast, toast };
-
-// Also re-export sonner toast to use if needed
-export const sonner = sonnerToast;
+export { useToast, toast, sonnerToast };
