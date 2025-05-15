@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/Sidebar";
@@ -74,7 +73,7 @@ const Index: React.FC = () => {
       // For admins, this sets selectedUserDetail
       // For normal users, this sets their own data
       if (authUser?.role === "admin") {
-        navigate(`/?userId=${userId}`);
+        navigate(`/users/${userId}`);
       } else {
         setCurrentUserData(detail);
       }
