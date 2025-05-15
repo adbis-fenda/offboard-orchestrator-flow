@@ -46,17 +46,16 @@ export function AppSidebar() {
           <SidebarGroupLabel>Main</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild onClick={() => navigate("/")}>
-                  <div className="flex items-center">
-                    <LayoutDashboard />
-                    <span>Dashboard</span>
-                  </div>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              {/* Only show My Applications for non-admin users */}
-              {user.role !== "admin" && (
+              {user.role === "admin" ? (
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild onClick={() => navigate("/")}>
+                    <div className="flex items-center">
+                      <LayoutDashboard />
+                      <span>Dashboard</span>
+                    </div>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ) : (
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild onClick={() => navigate("/my-applications")}>
                     <div className="flex items-center">
