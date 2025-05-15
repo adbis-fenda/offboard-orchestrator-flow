@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,7 +21,6 @@ interface UserCardProps {
 
 export function UserCard({ user, onReviewAccess, isAdmin }: UserCardProps) {
   const { toast } = useToast();
-  const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
   
   const getStatusColor = (status: User["status"]) => {
@@ -99,10 +97,6 @@ export function UserCard({ user, onReviewAccess, isAdmin }: UserCardProps) {
                 title: "User is already disabled",
                 description: "This user has already been offboarded.",
               });
-              return;
-            }
-            if (isAdmin) {
-              navigate(`/review-access/${user.id}`);
               return;
             }
             onReviewAccess(user.id);
