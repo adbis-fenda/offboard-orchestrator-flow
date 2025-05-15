@@ -12,11 +12,14 @@ import { Application } from "@/types";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 export function AppAccessCard({ app }: { app: Application }) {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [isRevoking, setIsRevoking] = useState(false);
   const [isRevoked, setIsRevoked] = useState(false);
+  const isAdmin = user?.role === "admin";
 
   const handleRevoke = () => {
     setIsRevoking(true);
@@ -56,7 +59,7 @@ export function AppAccessCard({ app }: { app: Application }) {
           <Badge variant="outline" className="bg-muted">
             Role: {app.role}
           </Badge>
-          {!isRevoked ? (
+          {isAdmin && !isRevoked ? (
             <Button 
               variant="destructive" 
               size="sm"
@@ -66,11 +69,11 @@ export function AppAccessCard({ app }: { app: Application }) {
             >
               {isRevoking ? "Revoking..." : "Revoke"}
             </Button>
-          ) : (
+          ) : isRevoked ? (
             <Badge variant="outline" className="bg-status-disabled text-white">
               Revoked
             </Badge>
-          )}
+          ) : null}
         </div>
         {app.lastUsed && (
           <div className="text-xs text-muted-foreground mt-2">

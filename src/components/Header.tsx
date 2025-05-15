@@ -18,6 +18,12 @@ const Header = ({ searchQuery = "", setSearchQuery = (_: string) => {} }) => {
     { id: 2, userName: "Bob Lee" },
   ];
 
+  // Use Alex Morgan's information for regular users
+  const displayName = user?.role === "admin" ? user?.name : "Alex Morgan";
+  const avatarUrl = user?.role === "admin" 
+    ? user?.avatarUrl 
+    : "https://randomuser.me/api/portraits/women/44.jpg";
+
   const handleLogout = () => {
     logout();
     toast({
@@ -91,11 +97,11 @@ const Header = ({ searchQuery = "", setSearchQuery = (_: string) => {} }) => {
           
           <div className="flex items-center space-x-2">
             <Avatar className="h-8 w-8">
-              <AvatarImage src={user?.avatarUrl || "https://github.com/shadcn.png"} alt={user?.name || "User"} />
-              <AvatarFallback>{user?.name?.substring(0, 2) || "U"}</AvatarFallback>
+              <AvatarImage src={avatarUrl} alt={displayName} />
+              <AvatarFallback>{displayName?.substring(0, 2) || "AM"}</AvatarFallback>
             </Avatar>
             <div className="hidden md:block">
-              <p className="text-sm font-medium">{user?.name}</p>
+              <p className="text-sm font-medium">{displayName}</p>
               <p className="text-xs text-muted-foreground">{user?.role}</p>
             </div>
           </div>
