@@ -21,9 +21,10 @@ const queryClient = new QueryClient();
 interface ProtectedRouteProps {
   element: React.ReactNode;
   requiredRole?: "admin" | "user" | undefined;
+  adminForbidden?: boolean; // New prop to forbid admins from accessing certain routes
 }
 
-const ProtectedRoute = ({ element, requiredRole }: ProtectedRouteProps) => {
+const ProtectedRoute = ({ element, requiredRole, adminForbidden }: ProtectedRouteProps) => {
   const { user, isLoading } = useAuth();
   
   if (isLoading) {
@@ -39,6 +40,11 @@ const ProtectedRoute = ({ element, requiredRole }: ProtectedRouteProps) => {
     return <Navigate to="/" replace />;
   }
   
+  // If admins are forbidden from this route and user is admin
+  if (adminForbidden && user.role === "admin") {
+    return <Navigate to="/" replace />;
+  }
+  
   return <>{element}</>;
 };
 
@@ -47,7 +53,7 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/" element={<ProtectedRoute element={<Index />} />} />
-      <Route path="/my-applications" element={<ProtectedRoute element={<MyApplications />} />} />
+      <Route path="/my-applications" element={<ProtectedRoute element={<MyApplications />} adminForbidden={true} />} />
       <Route path="/spend-management" element={<ProtectedRoute element={<SpendManagement />} requiredRole="admin" />} />
       <Route path="/users" element={<ProtectedRoute element={<UsersPage />} requiredRole="admin" />} />
       <Route path="/compliance" element={<ProtectedRoute element={<CompliancePage />} requiredRole="admin" />} />
