@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { addAuditLog } from "@/data/auditLogs";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface UserDetailProps {
   user: UserDetailType;
@@ -34,6 +35,8 @@ interface UserDetailProps {
 
 export function UserDetail({ user, onBack }: UserDetailProps) {
   const { toast } = useToast();
+  const { user: authUser } = useAuth();
+  const isAdmin = authUser?.role === "admin";
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isOffboarding, setIsOffboarding] = useState(false);
   const [isOffboarded, setIsOffboarded] = useState(false);
@@ -203,15 +206,17 @@ export function UserDetail({ user, onBack }: UserDetailProps) {
             <UserPlus className="h-4 w-4 mr-2" /> 
             Request Access
           </Button>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => setIsAssignRoleDialogOpen(true)}
-            disabled={isOffboarded}
-          >
-            <Shield className="h-4 w-4 mr-2" /> 
-            Assign Role
-          </Button>
+          {isAdmin && (
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setIsAssignRoleDialogOpen(true)}
+              disabled={isOffboarded}
+            >
+              <Shield className="h-4 w-4 mr-2" /> 
+              Assign Role
+            </Button>
+          )}
         </div>
       </div>
       
@@ -221,31 +226,35 @@ export function UserDetail({ user, onBack }: UserDetailProps) {
         ))}
       </div>
       
-      <Separator className="my-8" />
-      
-      <div className="flex justify-center">
-        <Button
-          variant="destructive"
-          size="lg"
-          onClick={() => setIsDialogOpen(true)}
-          disabled={isOffboarding || isOffboarded}
-          className="px-8"
-        >
-          {isOffboarding ? (
-            <span className="flex items-center">
-              <span className="mr-2 animate-pulse-subtle">Offboarding User...</span>
-            </span>
-          ) : isOffboarded ? (
-            <span className="flex items-center">
-              <UserX size={18} className="mr-2" /> User Offboarded
-            </span>
-          ) : (
-            <span className="flex items-center">
-              <UserX size={18} className="mr-2" /> Offboard User
-            </span>
-          )}
-        </Button>
-      </div>
+      {isAdmin && (
+        <>
+          <Separator className="my-8" />
+          
+          <div className="flex justify-center">
+            <Button
+              variant="destructive"
+              size="lg"
+              onClick={() => setIsDialogOpen(true)}
+              disabled={isOffboarding || isOffboarded}
+              className="px-8"
+            >
+              {isOffboarding ? (
+                <span className="flex items-center">
+                  <span className="mr-2 animate-pulse-subtle">Offboarding User...</span>
+                </span>
+              ) : isOffboarded ? (
+                <span className="flex items-center">
+                  <UserX size={18} className="mr-2" /> User Offboarded
+                </span>
+              ) : (
+                <span className="flex items-center">
+                  <UserX size={18} className="mr-2" /> Offboard User
+                </span>
+              )}
+            </Button>
+          </div>
+        </>
+      )}
       
       {/* Offboarding Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -364,8 +373,8 @@ export function UserDetail({ user, onBack }: UserDetailProps) {
                   <SelectValue placeholder="Choose access level" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="viewer">Viewer</SelectItem>
-                  <SelectItem value="contributor">Contributor</SelectItem>
+                  <SelectItem value="read">Read</SelectItem>
+                  <SelectItem value="read_write">Read & Write</SelectItem>
                   <SelectItem value="admin">Admin</SelectItem>
                 </SelectContent>
               </Select>
