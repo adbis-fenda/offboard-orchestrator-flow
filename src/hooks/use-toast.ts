@@ -161,12 +161,10 @@ const useToast = () => {
   return toast
 }
 
-// Standalone toast function
+// Standalone toast function that adapts our toast structure to sonner's API
 const toast = (props: Omit<ToasterToast, "id">) => {
-  return sonnerToast({
-    ...props,
+  return sonnerToast(props.title as string, {
     description: props.description,
-    title: props.title,
   });
 };
 
