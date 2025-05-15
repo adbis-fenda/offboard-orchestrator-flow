@@ -11,7 +11,7 @@ import { mockDashboardStats } from "@/data/dashboardStats";
 import type { User, UserDetail } from "@/types";
 import { Card } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 // Sample spend management data
 const applications = [
@@ -25,6 +25,7 @@ const Index: React.FC = () => {
   const { user: authUser } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const { userId: paramUserId } = useParams<{ userId: string }>();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [currentUserData, setCurrentUserData] = useState<UserDetail | null>(null);
@@ -32,16 +33,12 @@ const Index: React.FC = () => {
 
   // Check for userId in URL params to show user detail
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const userId = params.get('userId');
-    
-    if (userId) {
-      handleReviewAccess(userId);
+    if (paramUserId) {
+      handleReviewAccess(paramUserId);
     } else if (authUser && authUser.role !== "admin") {
-      // For normal users, automatically load their own data
       fetchCurrentUserData();
     }
-  }, [location.search, authUser]);
+  }, [paramUserId, authUser]);
 
   // Fetch current user data for normal users
   const fetchCurrentUserData = async () => {
@@ -100,13 +97,13 @@ const Index: React.FC = () => {
           <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
           <div className="flex-1 p-6 bg-background overflow-auto space-y-8">
             {/* For admin showing another user's details OR normal user showing their own details */}
-            {(location.search.includes('userId') && authUser?.role === "admin") || 
+            {(paramUserId && authUser?.role === "admin") ||
              (authUser?.role !== "admin" && currentUserData) ? (
-              <UserDetailComponent 
-                user={authUser?.role === "admin" ? 
-                  (filteredUsers.find(u => u.id === new URLSearchParams(location.search).get('userId')) as UserDetail) : 
-                  (currentUserData as UserDetail)} 
-                onBack={handleBackToUsers} 
+              <UserDetailComponent
+                user={authUser?.role === "admin"
+                  ? (filteredUsers.find(u => u.id === paramUserId) as UserDetail)
+                  : (currentUserData as UserDetail)}
+                onBack={handleBackToUsers}
               />
             ) : (
               <>
