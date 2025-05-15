@@ -187,7 +187,7 @@ export default function SecurityPage() {
                     <CardHeader className="pb-2">
                       <div className="flex justify-between items-start">
                         <CardTitle className="text-lg">{request.applicationName}</CardTitle>
-                        <Badge variant={request.status === "approved" ? "success" : "destructive"}>
+                        <Badge variant={request.status === "approved" ? "secondary" : "destructive"}>
                           {request.status === "approved" ? "Approved" : "Denied"}
                         </Badge>
                       </div>

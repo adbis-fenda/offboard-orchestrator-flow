@@ -46,7 +46,7 @@ export default function MyApplications() {
         ) : userApps?.length ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {userApps.map((app: Application) => (
-              <AppAccessCard key={app.id} application={app} />
+              <AppAccessCard key={app.id} app={app} />
             ))}
           </div>
         ) : (
