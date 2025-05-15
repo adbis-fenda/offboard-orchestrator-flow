@@ -73,7 +73,7 @@ const Index: React.FC = () => {
       // For admins, this sets selectedUserDetail
       // For normal users, this sets their own data
       if (authUser?.role === "admin") {
-        navigate(`/users/${userId}`);
+        navigate(`/?userId=${userId}`);
       } else {
         setCurrentUserData(detail);
       }
