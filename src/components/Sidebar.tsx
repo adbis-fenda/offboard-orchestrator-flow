@@ -7,7 +7,8 @@ import {
   Settings, 
   LogOut,
   CreditCard,
-  FileBarChart
+  FileBarChart,
+  Apps
 } from "lucide-react";
 import { 
   Sidebar,
@@ -50,6 +51,15 @@ export function AppSidebar() {
                   <div className="flex items-center">
                     <LayoutDashboard />
                     <span>Dashboard</span>
+                  </div>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild onClick={() => navigate("/my-applications")}>
+                  <div className="flex items-center">
+                    <Apps />
+                    <span>My Applications</span>
                   </div>
                 </SidebarMenuButton>
               </SidebarMenuItem>

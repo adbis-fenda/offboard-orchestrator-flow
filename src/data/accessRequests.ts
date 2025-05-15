@@ -40,7 +40,7 @@ export const mockAccessRequests: AccessRequest[] = [
     applicationId: "app2",
     applicationName: "MongoDB",
     applicationIcon: "/mongodb.png",
-    requestedRole: "Editor",
+    requestedRole: "Write",
     requestDate: "2025-05-14T09:15:22",
     status: "pending"
   },
@@ -53,15 +53,49 @@ export const mockAccessRequests: AccessRequest[] = [
     applicationId: "app3",
     applicationName: "HubSpot",
     applicationIcon: "/hubspot.png",
-    requestedRole: "Viewer",
+    requestedRole: "Read",
     requestDate: "2025-05-14T11:05:18",
     status: "pending"
   }
 ];
 
 export async function getAccessRequests(): Promise<AccessRequest[]> {
-  // Fix: Pass a string endpoint path first, then the data as second parameter
   return simulateApiCall("access/requests", mockAccessRequests);
+}
+
+interface CreateAccessRequestParams {
+  userId: string;
+  userName: string;
+  userEmail: string;
+  userAvatarUrl: string;
+  applicationId: string;
+  applicationName: string;
+  applicationIcon: string;
+  requestedRole: string;
+  reason?: string;
+}
+
+export async function createAccessRequest(params: CreateAccessRequestParams): Promise<AccessRequest> {
+  const newRequest: AccessRequest = {
+    id: `req${mockAccessRequests.length + 1}`,
+    ...params,
+    requestDate: new Date().toISOString(),
+    status: "pending"
+  };
+  
+  mockAccessRequests.push(newRequest);
+  
+  // Add this action to audit logs
+  const { addAuditLog } = await import("./auditLogs");
+  await addAuditLog({
+    action: "Access Request Created",
+    performedBy: params.userName,
+    targetUser: params.userName,
+    targetApp: params.applicationName,
+    details: `Requested ${params.requestedRole} access to ${params.applicationName}`
+  });
+  
+  return simulateApiCall("access/requests/create", newRequest);
 }
 
 export async function updateAccessRequestStatus(
@@ -91,6 +125,5 @@ export async function updateAccessRequestStatus(
     details: `${newStatus === "approved" ? "Approved" : "Denied"} request for ${mockAccessRequests[requestIndex].requestedRole} access to ${mockAccessRequests[requestIndex].applicationName}`
   });
   
-  // Fix: Pass a string endpoint path first, then the data as second parameter
   return simulateApiCall("access/requests/update", mockAccessRequests[requestIndex]);
 }
