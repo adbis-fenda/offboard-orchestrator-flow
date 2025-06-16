@@ -20,10 +20,13 @@ export default function SecurityPage() {
   const [dialogAction, setDialogAction] = useState<"approve" | "deny" | null>(null);
   const [rejectionReason, setRejectionReason] = useState<string>("");
 
-  const { data: accessRequests = [], isLoading } = useQuery({
+  const { data: accessRequestsData, isLoading } = useQuery({
     queryKey: ["accessRequests"],
     queryFn: getAccessRequests
   });
+
+  // Ensure we always have an array to work with
+  const accessRequests = Array.isArray(accessRequestsData) ? accessRequestsData : [];
 
   const updateStatusMutation = useMutation({
     mutationFn: ({ requestId, status, reason }: { requestId: string, status: "approved" | "denied", reason?: string }) => 
@@ -35,7 +38,7 @@ export default function SecurityPage() {
         title: `Access request ${actionText}`,
         description: `The access request has been ${actionText} successfully.`,
       });
-      setRejectionReason(""); // Clear the rejection reason
+      setRejectionReason("");
     },
     onError: (error) => {
       toast({
