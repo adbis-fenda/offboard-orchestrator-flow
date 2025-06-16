@@ -67,8 +67,8 @@ export default function SecurityPage() {
   if (isLoading) {
     return (
       <Layout>
-        <div className="container mx-auto max-w-7xl px-4 py-10">
-          <h1 className="text-3xl font-bold mb-6 flex items-center justify-center">
+        <div className="p-6">
+          <h1 className="text-3xl font-bold mb-6 text-center flex items-center justify-center">
             <Shield className="mr-2" /> Security
           </h1>
           <div className="flex justify-center items-center min-h-[300px]">
@@ -84,8 +84,8 @@ export default function SecurityPage() {
 
   return (
     <Layout>
-      <div className="container mx-auto max-w-7xl px-4 py-10">
-        <h1 className="text-3xl font-bold mb-6 flex items-center justify-center">
+      <div className="p-6">
+        <h1 className="text-3xl font-bold mb-6 text-center flex items-center justify-center">
           <Shield className="mr-2" /> Security
         </h1>
 
