@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { User } from "@/types";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface UserCardProps {
   user: User;
@@ -21,6 +23,7 @@ interface UserCardProps {
 
 export function UserCard({ user, onReviewAccess, isAdmin }: UserCardProps) {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
   
   const getStatusColor = (status: User["status"]) => {
@@ -47,6 +50,17 @@ export function UserCard({ user, onReviewAccess, isAdmin }: UserCardProps) {
       default:
         return "Unknown";
     }
+  };
+
+  const handleReviewAccess = () => {
+    if (user.status === "disabled") {
+      toast({
+        title: "User is already disabled",
+        description: "This user has already been offboarded.",
+      });
+      return;
+    }
+    navigate(`/profile/${user.id}`);
   };
 
   return (
@@ -91,16 +105,7 @@ export function UserCard({ user, onReviewAccess, isAdmin }: UserCardProps) {
         <Button
           variant="default"
           className="w-full bg-brand-purple hover:bg-brand-light-purple"
-          onClick={() => {
-            if (user.status === "disabled") {
-              toast({
-                title: "User is already disabled",
-                description: "This user has already been offboarded.",
-              });
-              return;
-            }
-            onReviewAccess(user.id);
-          }}
+          onClick={handleReviewAccess}
         >
           Review Access
         </Button>

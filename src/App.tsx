@@ -13,6 +13,7 @@ import UsersPage from "@/pages/Users";
 import CompliancePage from "@/pages/Compliance";
 import SecurityPage from "@/pages/Security";
 import MyApplications from "@/pages/MyApplications";
+import ProfilePage from "@/pages/Profile";
 import Login from "@/pages/Login";
 
 const queryClient = new QueryClient();
