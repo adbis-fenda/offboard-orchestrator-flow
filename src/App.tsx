@@ -59,6 +59,7 @@ const AppRoutes = () => {
       <Route path="/users" element={<ProtectedRoute element={<UsersPage />} requiredRole="admin" />} />
       <Route path="/compliance" element={<ProtectedRoute element={<CompliancePage />} requiredRole="admin" />} />
       <Route path="/security" element={<ProtectedRoute element={<SecurityPage />} requiredRole="admin" />} />
+      <Route path="/profile/:userId" element={<ProtectedRoute element={<ProfilePage />} requiredRole="admin" />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
