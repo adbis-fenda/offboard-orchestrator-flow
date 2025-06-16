@@ -67,8 +67,8 @@ export default function SecurityPage() {
   if (isLoading) {
     return (
       <Layout>
-        <div className="container py-10">
-          <h1 className="text-3xl font-bold mb-6 flex items-center">
+        <div className="container mx-auto max-w-7xl px-4 py-10">
+          <h1 className="text-3xl font-bold mb-6 flex items-center justify-center">
             <Shield className="mr-2" /> Security
           </h1>
           <div className="flex justify-center items-center min-h-[300px]">
@@ -84,13 +84,13 @@ export default function SecurityPage() {
 
   return (
     <Layout>
-      <div className="container py-10">
-        <h1 className="text-3xl font-bold mb-6 flex items-center">
+      <div className="container mx-auto max-w-7xl px-4 py-10">
+        <h1 className="text-3xl font-bold mb-6 flex items-center justify-center">
           <Shield className="mr-2" /> Security
         </h1>
 
         <Tabs defaultValue="pending" className="mb-8">
-          <TabsList className="mb-4">
+          <TabsList className="mb-4 flex justify-center">
             <TabsTrigger value="pending" className="flex items-center gap-2">
               <Clock className="h-4 w-4" /> Pending Requests 
               {pendingRequests.length > 0 && (
