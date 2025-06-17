@@ -1,4 +1,3 @@
-
 import { simulateApiCall } from "./utils";
 
 export interface AccessRequest {
@@ -60,7 +59,9 @@ export const mockAccessRequests: AccessRequest[] = [
 ];
 
 export async function getAccessRequests(): Promise<AccessRequest[]> {
-  return simulateApiCall("access/requests", mockAccessRequests);
+  const result = await simulateApiCall("access/requests", mockAccessRequests);
+  // Return the actual data, not the wrapper object
+  return mockAccessRequests;
 }
 
 interface CreateAccessRequestParams {

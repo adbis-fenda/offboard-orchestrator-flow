@@ -20,23 +20,10 @@ export default function SecurityPage() {
   const [dialogAction, setDialogAction] = useState<"approve" | "deny" | null>(null);
   const [rejectionReason, setRejectionReason] = useState<string>("");
 
-  const { data: accessRequestsData, isLoading } = useQuery({
+  const { data: accessRequests = [], isLoading } = useQuery({
     queryKey: ["accessRequests"],
     queryFn: getAccessRequests
   });
-
-  // Debug logging
-  console.log("Security Page Debug:", {
-    accessRequestsData,
-    isLoading,
-    dataType: typeof accessRequestsData,
-    isArray: Array.isArray(accessRequestsData)
-  });
-
-  // Ensure we always have an array to work with
-  const accessRequests = Array.isArray(accessRequestsData) ? accessRequestsData : [];
-  
-  console.log("Processed access requests:", accessRequests);
 
   const updateStatusMutation = useMutation({
     mutationFn: ({ requestId, status, reason }: { requestId: string, status: "approved" | "denied", reason?: string }) => 
@@ -92,27 +79,12 @@ export default function SecurityPage() {
   const pendingRequests = accessRequests.filter(req => req.status === "pending");
   const processedRequests = accessRequests.filter(req => req.status !== "pending");
 
-  console.log("Filtered requests:", {
-    totalRequests: accessRequests.length,
-    pendingRequests: pendingRequests.length,
-    processedRequests: processedRequests.length,
-    pendingData: pendingRequests
-  });
-
   return (
     <Layout>
       <div className="p-6">
         <h1 className="text-3xl font-bold mb-6 text-center flex items-center justify-center">
           <Shield className="mr-2" /> Security
         </h1>
-
-        {/* Debug info - temporary */}
-        <div className="mb-4 p-4 bg-gray-100 rounded">
-          <p><strong>Debug Info:</strong></p>
-          <p>Total requests loaded: {accessRequests.length}</p>
-          <p>Pending requests: {pendingRequests.length}</p>
-          <p>Is loading: {isLoading ? 'Yes' : 'No'}</p>
-        </div>
 
         <Tabs defaultValue="pending" className="mb-8">
           <TabsList className="mb-4 flex justify-center">
@@ -136,9 +108,6 @@ export default function SecurityPage() {
                 <CardContent className="pt-6 text-center">
                   <AlertCircle className="mx-auto mb-2 text-muted-foreground" />
                   <p>No pending access requests</p>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Total access requests in system: {accessRequests.length}
-                  </p>
                 </CardContent>
               </Card>
             ) : (
